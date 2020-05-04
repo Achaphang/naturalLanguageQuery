@@ -85,14 +85,16 @@ var natural = require('natural');   // Include 'natural' Natural Language Proces
 
 var tokenize = new natural.WordTokenizer();  // Initialize extension for tokenizing input
 
+//function addQueries(var addInputQueries)
 // We want to create a HashTable to search for keys using tokens
 // Say we have information assurance 7code as string
 // We should generate
 var possibleQueries = new HashTable();
-var addInputQueries = "information security analyst queryCodeIST0"
+var addInputQueries = "information assurance queryCodeIST0";
 var keyStr; // This is used insert keys
 var valArr; // This is used to insert values
-var tokens = tokenize.tokenize(addInputQueries)
+var tokens = tokenize.tokenize(addInputQueries);
+possibleQueries.setItem(tokens[0], 'security');
 // The outer loop controls where we at maximum in the string
 // Example the first run of this we will look at information security
 // Second run information security analyst
@@ -110,15 +112,18 @@ for(var i = 0; i < tokens.length - 1; i++) {
     }
 
   }
-  /*
-  if(possibleQueries.hasItem(keyStr) {
 
-    if(possibleQueries.getItem(keystr) )
+  if(possibleQueries.keys().includes(keyStr)) {
+    console.log("Outer True")
+    if(!(possibleQueries.getItem(keyStr).includes(valArr[0]))) {
+      console.log("Inner True");
+      valArr.push(possibleQueries.getItem(keyStr));
+      possibleQueries.setItem(keyStr, valArr);
+    }
   }else{
       possibleQueries.setItem(keyStr, valArr);
   }
-  */
-  possibleQueries.setItem(keyStr, valArr);
+  addInputQueries = "information security assurance"
 }
 
 console.log(possibleQueries);
