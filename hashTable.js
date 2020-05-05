@@ -81,52 +81,58 @@ function HashTable(obj)
     }
 }
 
+function addNewQueries(addInputQueries, possibleQueries) {
+  // We want to create a HashTable to search for keys using tokens
+  // Say we have information assurance 7code as string
+  // We should generate
+  var addInputQueries;
+  var keyStr; // This is used insert keys
+  var valArr; // This is used to insert values
+  var tokens = tokenize.tokenize(addInputQueries);
+  // The outer loop controls where we at maximum in the string
+  // Example the first run of this we will look at information security
+  // Second run information security analyst
+  // Third run information security analyst queryCode
+  for(var i = 0; i < tokens.length - 1; i++) {
+    keyStr = "";
+    valArr = [];
+    for(var j = 0; j <= i + 1; j++) {
+      if(j <= i && i != j) {
+        keyStr += (tokens[j] + " ");
+      }else if(i == j && i != tokens.length) {
+        keyStr += tokens[j].toString();
+      }else{
+        valArr.push(tokens[j]);
+      }
+
+    }
+
+    if(possibleQueries.keys().includes(keyStr)) {
+      console.log("Outer True")
+      if(!(possibleQueries.getItem(keyStr).includes(valArr[0]))) {
+        console.log("Inner True");
+        for(var k = 0; k <= possibleQueries.getItem(keyStr).length - 1; k++)
+          valArr.push(possibleQueries.getItem(keyStr)[k]);
+        console.log(valArr);
+        possibleQueries.setItem(keyStr, valArr);
+      }
+    }else{
+        possibleQueries.setItem(keyStr, valArr);
+    }
+  }
+  return possibleQueries;
+}
+
 var natural = require('natural');   // Include 'natural' Natural Language Processing library
 
 var tokenize = new natural.WordTokenizer();  // Initialize extension for tokenizing input
+var optionalQueries = new HashTable();
+var input = "information security assurance querycode";
+optionalQueries = addNewQueries(input, optionalQueries);
+input = "information analyst querycode";
+optionalQueries = addNewQueries(input, optionalQueries);
 
-//function addQueries(var addInputQueries)
-// We want to create a HashTable to search for keys using tokens
-// Say we have information assurance 7code as string
-// We should generate
-var possibleQueries = new HashTable();
-var addInputQueries = "information assurance queryCodeIST0";
-var keyStr; // This is used insert keys
-var valArr; // This is used to insert values
-var tokens = tokenize.tokenize(addInputQueries);
-possibleQueries.setItem(tokens[0], 'security');
-// The outer loop controls where we at maximum in the string
-// Example the first run of this we will look at information security
-// Second run information security analyst
-// Third run information security analyst queryCode
-for(var i = 0; i < tokens.length - 1; i++) {
-  keyStr = "";
-  valArr = [];
-  for(var j = 0; j <= i + 1; j++) {
-    if(j <= i && i != j) {
-      keyStr += (tokens[j] + " ");
-    }else if(i == j && i != tokens.length) {
-      keyStr += tokens[j].toString();
-    }else{
-      valArr.push(tokens[j]);
-    }
-
-  }
-
-  if(possibleQueries.keys().includes(keyStr)) {
-    console.log("Outer True")
-    if(!(possibleQueries.getItem(keyStr).includes(valArr[0]))) {
-      console.log("Inner True");
-      valArr.push(possibleQueries.getItem(keyStr));
-      possibleQueries.setItem(keyStr, valArr);
-    }
-  }else{
-      possibleQueries.setItem(keyStr, valArr);
-  }
-  addInputQueries = "information security assurance"
-}
-
-console.log(possibleQueries);
+console.log(optionalQueries);
 //array = ["security", "queryCode"]
 //possibleQueries.setItem("information", array);
 //if(tokens.hasItem("information")) {
