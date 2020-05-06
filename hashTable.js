@@ -7,30 +7,34 @@
  * and (3) identification of an admissible class of queries.
  *******************************************************************************/
 
-// Include 'natural' Natural Language Processing library
-var natural = require('natural');
+ var natural = require('natural');
 
-// Initialize extension for tokenizing input
+ // Initialize extension for tokenizing input
 var tokenize = new natural.WordTokenizer();
 
-// This our hash table be using to process queries
-var optionalQueries = new HashTable();
+exports.myOptionalQuery = function() {
+  // This our hash table be using to process queries
+  var optionalQueries = new HashTable();
 
-// This is first input we want to use to update our hash table
-var input = "information security assurance querycode";
+  // This is our boolean for if we want to stop accept input for anything
+  var keepInputting = "true";
+  // This is first input we want to use to update our hash table
+  var input = "Information Security Assurance Querycode";
+  input = input.toLowerCase();
 
-// First update of our hash table
-optionalQueries = addNewQueries(input, optionalQueries);
+  // First update of our hash table
+  optionalQueries = addNewQueries(input, optionalQueries);
 
-// This is the second input we want to use to update our hash table
-input = "information analyst querycode";
-
-// Second update of our hash table
-optionalQueries = addNewQueries(input, optionalQueries);
+  // This is the second input we want to use to update our hash table
+  input = "Information Analyst Querycode";
+  input = input.toLowerCase();
+  // Second update of our hash table
+  optionalQueries = addNewQueries(input, optionalQueries);
+  return optionalQueries.keys();
+}
 
 // Outputs our hash tables with all it's keys and values as well
 // as functionality we can perform on the hash table
-console.log(optionalQueries);
 
 /*******************************************************************************
  * addNewQueries
