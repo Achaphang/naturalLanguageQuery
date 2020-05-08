@@ -36,14 +36,14 @@ exports.myQueryCodes = function(str) {
   var queryCodes = new HashTable();
   queryCodes = readTableFromQFile();
   var tokens = tokenize.tokenize(str);
-  str = "";
-  for(var i = 1; i < tokens.length; i++) {
-    if(i < tokens.length - 1)
-      str += tokens[i] + " ";
-    else
-      str += tokens[i];
+  //str = "";
+  var updateStr = "";
+  for(var i = tokens[0].length + 1; i < str.length; i++)
+  {
+      updateStr += str[i];
   }
-  queryCodes.setItem(tokens[0].toLowerCase(), str);
+  valArr.push(updateStr);
+  queryCodes.setItem(tokens[0].toLowerCase(), valArr);
   writeToQFile(queryCodes);
   return queryCodes;
 }
