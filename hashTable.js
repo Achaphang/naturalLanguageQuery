@@ -16,7 +16,6 @@ var tokenize = new natural.WordTokenizer();
 exports.myOptionalQuery = function(input) {
   // This our hash table be using to process queries
   var optionalQueries = new HashTable();
-  var readWriteFile = "C:/Users/Arch/Documents/GitHub/naturalLanguageQuery/testFile.txt"
   optionalQueries = readTableFromFile();
 
   // Makes input lowercase
@@ -59,6 +58,7 @@ exports.NLPTrainModel = function(str) {
 exports.NLPRunQuery = function(str) {
   str = str.toLowerCase();
   str = tokenize.tokenize(str);
+  tokenMatch(str);
   return str;
 }
 
@@ -67,9 +67,89 @@ exports.NLPRunQuery = function(str) {
  *Checks the tokenized strings against the hash table values and returns the
  *strings from the tables that match.
  ****************************************************************************/
-function tokenMatch()
+function tokenMatch(tokenArray)
 {
+    // Our tables for checking matches
+    var matchingHashTable = new HashTable();
 
+    // Our table for checking matching queryCodes
+    var matchingQueryTable = new HashTable();
+
+    // Assign our key value table
+    matchingHashTable = readTableFromFile();
+
+    // Assign our query key table
+    matchingQueryTable = readTableFromQFile();
+    // Empty key array for when we need to search keys
+    var matchingKeyArray = [];
+    matchingKeyArray = matchingHashTable.keys();
+    var matchingQueryArray = [];
+    matchingQueryArray = matchingQueryTable.keys();
+    var keyStr = "";
+    var queryCodeArray = [];
+    // Outer loop looks to see if token matches a key
+    for(var i = 0; i < tokenArray.length; i++) {
+      // Check if current token is apart of keys
+      if(matchingKeyArray.includes(tokenArray[i])) {
+        keyStr += tokenArray[i];  // Adds current token if it is
+        // Inner loop checks if the next token is a valid key and
+        // if we aren't looking ahead of the array need a space for valid key format
+        for(var j = i; j < tokenArray.length; j++) {
+            if(j + 1 < tokenArray.length && matchingKeyArray.includes((keyStr + " " + tokenArray[j + 1]))) {
+                keyStr += " " + tokenArray[j + 1];
+            }else{
+              for(var k = 0; k < matchingQueryArray.length; k++) {
+                if(matchingHashTable.getItem(keyStr).includes(matchingQueryTable.keys()[k])) {
+                  if(!queryCodeArray.includes(matchingQueryTable.keys()[k])) {
+                    queryCodeArray.push(matchingQueryTable.keys()[k]);
+                  }
+                }
+              }
+              keyStr = "";
+              j = tokenArray.length;
+            }
+        }
+      }
+    }
+
+    //Look to see if a matching key exists in the tokens
+    for (var x = 0; x < matchingKeyArray.length; x++)
+    {
+        //Reset string
+        keyStr = "";
+
+        //If any token matches our keys
+        if (tokenArray.includes(matchingKeyArray[x]))
+        {
+            //Add current key to the key string
+            keyStr += matchingKeyArray[x];
+
+            //Looping forwards through tokenArray until end of array
+            for (var y = 0; y < tokenArray.length; y++)
+            {
+                //Add element to keyStr if it matches
+                if (matchingHashTable.getItem(keyStr).includes(tokenArray[y]))
+                {
+                    keyStr += " " + tokenArray[y];
+                    y = 0;
+                }
+            }
+
+            //Checks to see if the query code already exists
+            for (var z = 0; z < matchingQueryArray.length; z++)
+            {
+                if(matchingHashTable.getItem(keyStr).includes(matchingQueryTable.keys()[z]))
+                {
+                    if(!queryCodeArray.includes(matchingQueryTable.keys()[z]))
+                    {
+                        queryCodeArray.push(matchingQueryTable.keys()[z]);
+                    }
+                }
+            }
+        }
+    }
+
+    console.log(queryCodeArray);
 }
 
 // Outputs our hash tables with all it's keys and values as well
