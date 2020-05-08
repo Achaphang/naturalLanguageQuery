@@ -7,30 +7,69 @@
  * and (3) identification of an admissible class of queries.
  *******************************************************************************/
 
- var natural = require('natural');
+ var natural = require('natural');   //Include natural language library
+ var fs = require('fs');             //Include file library
 
  // Initialize extension for tokenizing input
 var tokenize = new natural.WordTokenizer();
 
-exports.myOptionalQuery = function() {
+exports.myOptionalQuery = function(input) {
   // This our hash table be using to process queries
   var optionalQueries = new HashTable();
+  var readWriteFile = "C:/Users/Arch/Documents/GitHub/naturalLanguageQuery/testFile.txt"
+  optionalQueries = readTableFromFile();
 
-  // This is our boolean for if we want to stop accept input for anything
-  var keepInputting = "true";
-  // This is first input we want to use to update our hash table
-  var input = "Information Security Assurance Querycode";
+  // Makes input lowercase
   input = input.toLowerCase();
 
-  // First update of our hash table
+  // Update our hash table
   optionalQueries = addNewQueries(input, optionalQueries);
 
-  // This is the second input we want to use to update our hash table
-  input = "Information Analyst Querycode";
-  input = input.toLowerCase();
-  // Second update of our hash table
-  optionalQueries = addNewQueries(input, optionalQueries);
-  return optionalQueries.keys();
+  // write the update
+  writeToFile(optionalQueries);
+
+  // return our table to us
+  return optionalQueries;
+}
+
+exports.myQueryCodes = function(str) {
+  var valArr = [];
+  var queryCodes = new HashTable();
+  queryCodes = readTableFromQFile();
+  var tokens = tokenize.tokenize(str);
+  str = "";
+  for(var i = 1; i < tokens.length; i++) {
+    if(i < tokens.length - 1)
+      str += tokens[i] + " ";
+    else
+      str += tokens[i];
+  }
+  queryCodes.setItem(tokens[0].toLowerCase(), str);
+  writeToQFile(queryCodes);
+  return queryCodes;
+}
+
+exports.NLPTrainModel = function(str) {
+  const { NlpManager } = require('node-nlp');
+
+  const manager = new NlpManager({ languages: ['en'] });
+
+}
+
+exports.NLPRunQuery = function(str) {
+  str = str.toLowerCase();
+  str = tokenize.tokenize(str);
+  return str;
+}
+
+/****************************************************************************
+ *tokenMatch
+ *Checks the tokenized strings against the hash table values and returns the
+ *strings from the tables that match.
+ ****************************************************************************/
+function tokenMatch()
+{
+
 }
 
 // Outputs our hash tables with all it's keys and values as well
@@ -184,3 +223,287 @@ function HashTable(obj)
         this.length = 0;
     }
 }
+
+/****************************************************************************
+ *readTableFromFile
+ *Opens the local input file and reads from the contents and returns them
+ *as a new hash table.
+ ****************************************************************************/
+function readTableFromFile()
+{
+    var newTable = new HashTable();   //The new hash table
+    var string = "";                  //Data from the file
+
+    // Read the hash table data from the file and put it in a string
+    fs.readFile('testFile.txt', function (err, data) {
+       //Check for read errors
+       if (err) {
+          return console.error(err);
+       }
+       //Convert all of the file data into one string
+       string += data.toString() + '\0';
+    });
+    string = fs.readFileSync("testFile.txt",'utf8');
+    string += '\0';
+
+    //Process string
+    var keyString = "";
+    var valueArray = [];
+    var valueString = "";
+    var index = 0;
+
+    //Iterate through the entire string, until we reach the end.
+    //Everytime we reach a newline character, we write the current
+    //keyString and valueArray to the hashTable.
+    while(string.charAt(index) != '\0')
+    {
+        //Increment until we are finished reading the keys
+        while(string.charAt(index) != ':')
+        {
+            //Add next character to keyString
+            keyString += string.charAt(index);
+            index++;
+        }
+
+        index++;
+
+        while(string.charAt(index) != '\n')
+        {
+            //Add current character to valueString
+            if(string.charAt(index) != ',') {
+                valueString += string.charAt(index);
+            }
+            if(string.charAt(index) == ',')
+            {
+              if(valueString == "")
+                console.log("Empty string");
+
+                //Push valueString to the array
+                valueArray.push(valueString);
+                //Reset valueString
+                valueString = '';
+            }
+            index++;
+        }
+        //Push valueString to the array
+        valueArray.push(valueString);
+        //Reset valueString
+        valueString = '';
+
+        index++;
+
+        //Add the string and array to the hash table
+        newTable.setItem(keyString, valueArray);
+        //Clear keyString and valueArray for next key-value pair
+        keyString = '';
+        valueArray = [];
+    }
+    return newTable;
+}
+
+/*****************************************************************************
+ *writeToFile
+ *Opens the local input file and writes the current hash table contents to it.
+ *Other functions will read from this file to utilize it for queries.
+ ****************************************************************************/
+function writeToFile(currentTable)
+{
+    var stringToWrite = "";   //Contains the current string to be written
+
+    //Iterate through each bucket, adding in their keys and items
+    for (var i = 0; i < currentTable.length; i++)
+    {
+        //Assign the current bucket's key to the string
+        stringToWrite += currentTable.keys()[i] + ":";
+
+        //Iterate through all of the items of the current bucket and add them to
+        for (var k = 0; k < currentTable.getItem(currentTable.keys()[i]).length; k++)
+        //for (var k = 0; k < Object.keys(currentTable).length; k++)
+        {
+
+            //Assign the current key's next item to the string
+            stringToWrite += currentTable.getItem(currentTable.keys()[i])[k];
+
+            //Check if this is the last item
+            if(k == currentTable.getItem(currentTable.keys()[i]).length - 1)
+            {
+                //If last item, write a newline character
+                stringToWrite += "\n";
+            }
+            else
+            {
+                //Otherwise, write a comma and prepare for next item entry
+                stringToWrite += ",";
+            }
+        }
+    }
+
+    //Write items to the file
+    fs.writeFile("testFile.txt", stringToWrite, function(err)
+    {
+      //Check for write errors
+      if (err)
+      {
+          return console.error(err);
+      }
+    });
+
+    //Clear string variable
+    stringToWrite = "";
+}
+
+/************************************************************************
+ *cleanUpInput
+ *Removes non-alpha characters and sets all alpha character to lowercase.
+ ***********************************************************************/
+
+ function cleanUpInput(inputString)
+ {
+     var processedString;   //The string containing the nice formatting
+     var letters = /^[a-zA-Z]+$/;   //The characters we want to allow
+     var index;
+     inputString += '\0';   //Append null character
+
+     //Make inputString characters all lowercase
+     inputString.toLowerCase();
+
+     //Iterate through string and reformat until reach null character
+     while(inputString.charAt(index) != '\0')
+     {
+         if(inputString.value.match(letters) || inputString.charAt(index) == ' ')
+         {
+             processedString += inputString.charAt(index);
+         }
+         else
+         index++;
+     }
+ }
+
+ /*****************************************************************************
+  *writeToFile
+  *Opens the local input file and writes the current hash table contents to it.
+  *Other functions will read from this file to utilize it for queries.
+  ****************************************************************************/
+ function writeToQFile(currentTable)
+ {
+     var stringToWrite = "";   //Contains the current string to be written
+
+     //Iterate through each bucket, adding in their keys and items
+     for (var i = 0; i < currentTable.length; i++)
+     {
+         //Assign the current bucket's key to the string
+         stringToWrite += currentTable.keys()[i] + ":";
+
+         //Iterate through all of the items of the current bucket and add them to
+         for (var k = 0; k < currentTable.getItem(currentTable.keys()[i]).length; k++)
+         //for (var k = 0; k < Object.keys(currentTable).length; k++)
+         {
+
+             //Assign the current key's next item to the string
+             stringToWrite += currentTable.getItem(currentTable.keys()[i])[k];
+
+             //Check if this is the last item
+             if(k == currentTable.getItem(currentTable.keys()[i]).length - 1)
+             {
+                 //If last item, write a newline character
+                 stringToWrite += "\n";
+             }
+         }
+     }
+
+     //Write items to the file
+     fs.writeFile("querycode.txt", stringToWrite, function(err)
+     {
+       //Check for write errors
+       if (err)
+       {
+           return console.error(err);
+       }
+     });
+
+     //Clear string variable
+     stringToWrite = "";
+ }
+
+ /****************************************************************************
+  *readTableFromQFile
+  *Opens the local input file and reads from the contents and returns them
+  *as a new hash table.
+  ****************************************************************************/
+ function readTableFromQFile()
+ {
+     var newTable = new HashTable();   //The new hash table
+     var string = "";                  //Data from the file
+
+     // Read the hash table data from the file and put it in a string
+     fs.readFile('testFile.txt', function (err, data) {
+        //Check for read errors
+        if (err) {
+           return console.error(err);
+        }
+        //Convert all of the file data into one string
+        string += data.toString() + '\0';
+     });
+     string = fs.readFileSync("querycode.txt",'utf8');
+     string += '\0';
+
+     //Process string
+     var keyString = "";
+     var valueArray = [];
+     var valueString = "";
+     var index = 0;
+
+     //Iterate through the entire string, until we reach the end.
+     //Everytime we reach a newline character, we write the current
+     //keyString and valueArray to the hashTable.
+     while(string.charAt(index) != '\0')
+     {
+         //Increment until we are finished reading the keys
+         while(string.charAt(index) != ':')
+         {
+             //Add next character to keyString
+             keyString += string.charAt(index);
+             index++;
+         }
+
+         index++;
+
+         while(string.charAt(index) != '\n')
+         {
+             //Add current character to valueString
+             if(string.charAt(index) != ',') {
+                 valueString += string.charAt(index);
+             }
+             if(string.charAt(index) == ',')
+             {
+               if(valueString == "")
+                 console.log("Empty string");
+
+                 //Push valueString to the array
+                 valueArray.push(valueString);
+                 //Reset valueString
+                 valueString = '';
+             }
+             index++;
+         }
+         //Push valueString to the array
+         valueArray.push(valueString);
+         //Reset valueString
+         valueString = '';
+
+         index++;
+
+         //Add the string and array to the hash table
+         newTable.setItem(keyString, valueArray);
+         //Clear keyString and valueArray for next key-value pair
+         keyString = '';
+         valueArray = [];
+     }
+     return newTable;
+ }
+
+/****************************************************************************
+ *readTableFromQFile
+ *Opens the local input file and reads from the contents and returns them
+ *as a new hash table.
+ ****************************************************************************/

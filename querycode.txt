@@ -1,0 +1,1 @@
+querycode10:SELECT FROM softwareEngineering

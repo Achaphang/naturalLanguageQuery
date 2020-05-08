@@ -1,0 +1,7 @@
+information:analyst,security
+information security:assurance
+information security assurance:querycode
+information analyst:querycode
+sofware:engineer
+software:developer
+machine:learning

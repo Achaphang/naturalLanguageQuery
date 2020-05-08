@@ -30,7 +30,7 @@ app.get("/getquery", function (request, response){
     var queryID = request.query.queryid;
 
     if (queryID != "") {
-        response.send(queryID);
+        response.send(dt.NLPRunQuery(queryID));
     } else {
         response.send("Please provide us a query");
     }
@@ -50,7 +50,17 @@ app.get("/getbackup", function (request, response){
     var backup = request.query.backup;
 
     if (backup != "") {
-        response.send(backup);
+        response.send(dt.myOptionalQuery(backup));
+    } else {
+        response.send("Please provide us with training input");
+    }
+});
+
+app.get("/getquerycode", function (request, response){
+    var querycode = request.query.querycode;
+
+    if (querycode != "") {
+        response.send(dt.myQueryCodes(querycode));
     } else {
         response.send("Please provide us with training input");
     }
