@@ -66,6 +66,8 @@ exports.NLPRunQuery = function(str) {
  *tokenMatch
  *Checks the tokenized strings against the hash table values and returns the
  *strings from the tables that match.
+ * matchingHashTable is at risk of corruption because if you hit enter instead of
+ * pressing submit it takes that key value
  ****************************************************************************/
 function tokenMatch(tokenArray)
 {
@@ -110,6 +112,7 @@ function tokenMatch(tokenArray)
             }
         }
       }
+      console.log(queryCodeArray);
     }
 
     //Look to see if a matching key exists in the tokens
@@ -149,7 +152,7 @@ function tokenMatch(tokenArray)
         }
     }
 
-    console.log(queryCodeArray);
+    //console.log(queryCodeArray);
 }
 
 // Outputs our hash tables with all it's keys and values as well

@@ -1,9 +1,4 @@
-information:assurance,analyst,security
-information security:assurance
-information security assurance:querycode
-information analyst:querycode
-sofware:engineer
-software:developer
-machine:learning
+information:assurance
 information assurance:querycode11
+software:developer
 software developer:querycode10
