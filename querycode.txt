@@ -1,2 +1,6 @@
+<<<<<<< HEAD
 querycode10:SELECT * FROM softwareEngineering;
 querycode11:SELECT * FROM cyberSecurity;
+=======
+querycode10:SELECT FROM softwareEngineering
+>>>>>>> parent of 021bab7... Added Basic Token Matching Functionality
