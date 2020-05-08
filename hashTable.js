@@ -36,14 +36,15 @@ exports.myQueryCodes = function(str) {
   var queryCodes = new HashTable();
   queryCodes = readTableFromQFile();
   var tokens = tokenize.tokenize(str);
-  str = "";
-  for(var i = 1; i < tokens.length; i++) {
-    if(i < tokens.length - 1)
-      str += tokens[i] + " ";
-    else
-      str += tokens[i];
+
+  var updateStr = "";
+  for (var i = tokens[0].length + 1; i < str.length; i++)
+  {
+      updateStr += str[i];
   }
-  queryCodes.setItem(tokens[0].toLowerCase(), str);
+
+  valArr.push(updateStr);
+  queryCodes.setItem(tokens[0].toLowerCase(), valArr);
   writeToQFile(queryCodes);
   return queryCodes;
 }
@@ -112,7 +113,6 @@ function tokenMatch(tokenArray)
             }
         }
       }
-      console.log(queryCodeArray);
     }
 
     //Look to see if a matching key exists in the tokens
@@ -151,8 +151,18 @@ function tokenMatch(tokenArray)
             }
         }
     }
-
+    var rtnStr = "";
+    var tempStr ="";
     //console.log(queryCodeArray);
+    for(var a = 0; a < queryCodeArray.length; a++)
+    {
+      if(a == queryCodeArray.length - 1)
+        rtnStr += matchingQueryTable.getItem(queryCodeArray[a])[0];
+      else
+        rtnStr += matchingQueryTable.getItem(queryCodeArray[a])[0] + '\n';
+    }
+
+    console.log(rtnStr);
 }
 
 // Outputs our hash tables with all it's keys and values as well
