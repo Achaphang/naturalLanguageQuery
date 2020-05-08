@@ -9,7 +9,6 @@
 
  var natural = require('natural');   //Include natural language library
  var fs = require('fs');             //Include file library
-
  // Initialize extension for tokenizing input
 var tokenize = new natural.WordTokenizer();
 
@@ -59,7 +58,7 @@ exports.NLPTrainModel = function(str) {
 exports.NLPRunQuery = function(str) {
   str = str.toLowerCase();
   str = tokenize.tokenize(str);
-  tokenMatch(str);
+  str = tokenMatch(str);
   return str;
 }
 
@@ -162,7 +161,7 @@ function tokenMatch(tokenArray)
         rtnStr += matchingQueryTable.getItem(queryCodeArray[a])[0] + '\n';
     }
 
-    console.log(rtnStr);
+    return rtnStr;
 }
 
 // Outputs our hash tables with all it's keys and values as well

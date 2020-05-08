@@ -3,11 +3,12 @@ var dt = require('./hashTable.js');
 var uc = require('natural');
 var mysql = require('mysql');
 var express = require("express");
-
+var sql = "";
 var con = mysql.createConnection({
   host: "localhost",
   user: "dbProject",
-  password: "password"
+  password: "password",
+  database: "mydb"
 });
 
 con.connect(function(err) {
@@ -30,7 +31,7 @@ app.get("/getquery", function (request, response){
     var queryID = request.query.queryid;
 
     if (queryID != "") {
-        response.send(dt.NLPRunQuery(queryID));
+        sql = response.send(dt.NLPRunQuery(queryID));
     } else {
         response.send("Please provide us a query");
     }
@@ -74,3 +75,27 @@ http.createServer(function (req, res) {
   res.write("The keys: " + dt.myOptionalQuery());
   res.end();
 }).listen(8080); */
+
+function handle_database(req,res) {
+
+    pool.getConnection(function(err,connection){
+        if (err) {
+          res.json({"code" : 100, "status" : "Error in connection database"});
+          return;
+        }
+
+        console.log('connected as id ' + connection.threadId);
+
+        connection.query("select * from user",function(err,rows){
+            connection.release();
+            if(!err) {
+                res.json(rows);
+            }
+        });
+
+        connection.on('error', function(err) {
+              res.json({"code" : 100, "status" : "Error in connection database"});
+              return;
+        });
+  });
+}
