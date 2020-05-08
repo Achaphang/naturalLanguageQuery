@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <title>CS360 NLP</title>
+        <style>
+            .prompt {
+                font-size: 16px;
+                color: brown;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+            .container {
+                width: 50%;
+            }
+            .left-pane {
+                width: 50%;
+                float: left;
+            }
+            .right-pane {
+                width: 50%;
+                float: right;
+            }
+            .submit-name {
+                clear: both;
+            }
+        </style>
+    </head>
+<body>
+    <h1>Natural Language Processing</h1>
+
+    <form method='GET' action="/getquery">
+        <div class="container">
+            <div class="prompt left-pane">
+                <span>Try a natural language query</span>
+            </div>
+            <div class="right-pane">
+                <input type="text" id="queryid" name="queryid" />
+            </div>
+        </div>
+        <div class="submit-query">
+            <input type="submit" value="submit the query" />
+        </div>
+        </div>
+    </form>
+    <form method='GET' action="/gettraininput">
+        <div class="container">
+            <div class="prompt left-pane">
+                <span>Provide training input</span>
+            </div>
+            <div class="right-pane">
+                <input type="text" id="traininput" name="traininput" />
+            </div>
+        </div>
+        <div class="submit-traininput">
+            <input type="submit" value="submit the training input" />
+        </div>
+        </div>
+    </form>
+    <form method='GET' action="/getbackup">
+        <div class="container">
+            <div class="prompt left-pane">
+                <span>Provide backup if model fails</span>
+            </div>
+            <div class="right-pane">
+                <input type="text" id="backup" name="backup" />
+            </div>
+        </div>
+        <div class="submit-backup">
+            <input type="submit" value="submit the backup for the model" />
+        </div>
+        </div>
+    </form>
+</body>
+</html>
